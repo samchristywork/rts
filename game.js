@@ -34,6 +34,7 @@ class Game {
     this.status = 'running';
     this.startTime = Date.now();
     this.initializePlayerEntities();
+    this.initializeResources();
     console.log(`Game started: ${this.id}`);
   }
 
@@ -48,6 +49,14 @@ class Game {
         this.addEntity('worker', playerId, baseX + 50 + (i * 30), baseY + 50);
       }
     });
+  }
+
+  initializeResources() {
+    this.addEntity('resource', null, 300, 200);
+    this.addEntity('resource', null, 500, 300);
+    this.addEntity('resource', null, 200, 400);
+    this.addEntity('resource', null, 600, 150);
+    this.addEntity('resource', null, 400, 450);
   }
 
   end() {

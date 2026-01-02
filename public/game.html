@@ -31,6 +31,13 @@
           ctx.arc(entity.position.x, entity.position.y, 8, 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
+        } else if (entity.type === 'resource') {
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.arc(entity.position.x, entity.position.y, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#000';
+          ctx.stroke();
         }
 
         ctx.fillStyle = '#000';
