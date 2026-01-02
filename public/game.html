@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RTS Game</title>
+</head>
+<body>
+  <canvas id="canvas" width="800" height="600" style="border: 1px solid black;"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    async function loadGame() {
+      const params = new URLSearchParams(window.location.search);
+      const gameId = params.get('id');
+
+      const response = await fetch(`/api/games/${encodeURIComponent(gameId)}`);
+      const game = await response.json();
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      game.entities.forEach(entity => {
+        if (entity.type === 'base') {
+          ctx.fillStyle = '#8B4513';
+          ctx.fillRect(entity.position.x, entity.position.y, 40, 40);
+          ctx.strokeStyle = '#000';
+          ctx.strokeRect(entity.position.x, entity.position.y, 40, 40);
+        } else if (entity.type === 'worker') {
+          ctx.fillStyle = '#4169E1';
+          ctx.beginPath();
+          ctx.arc(entity.position.x, entity.position.y, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = '#000';
+        ctx.font = '10px Arial';
+        ctx.fillText(`${entity.id}`, entity.position.x - 5, entity.position.y - 10);
+      });
+    }
+
+    loadGame();
+  </script>
+</body>
+</html>
