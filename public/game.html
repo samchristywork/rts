@@ -43,6 +43,14 @@
         ctx.fillStyle = '#000';
         ctx.font = '10px Arial';
         ctx.fillText(`${entity.id}`, entity.position.x - 5, entity.position.y - 10);
+
+        if (entity.type === 'resource') {
+          ctx.fillText(`${entity.value}`, entity.position.x - 10, entity.position.y + 20);
+        } else if (entity.type === 'base') {
+          ctx.fillText(`${entity.storedResources}/${entity.resourceCapacity}`, entity.position.x - 5, entity.position.y + 50);
+        } else if (entity.type === 'worker') {
+          ctx.fillText(`${entity.carrying}`, entity.position.x - 5, entity.position.y + 15);
+        }
       });
     }
 
