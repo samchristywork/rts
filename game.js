@@ -32,6 +32,21 @@ class Game {
   start() {
     this.status = 'running';
     this.startTime = Date.now();
+    this.initializePlayerEntities();
+    console.log(`Game started: ${this.id}`);
+  }
+
+  initializePlayerEntities() {
+    this.playerIds.forEach((playerId, index) => {
+      const baseX = 100 + (index * 500);
+      const baseY = 100 + (index * 500);
+
+      this.addEntity('base', playerId, baseX, baseY);
+
+      for (let i = 0; i < 3; i++) {
+        this.addEntity('worker', playerId, baseX + 50 + (i * 30), baseY + 50);
+      }
+    });
   }
 
   end() {
