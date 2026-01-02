@@ -1,8 +1,12 @@
 const express = require('express');
+const http = require('http');
 const path = require('path');
+const { Server } = require('socket.io');
 const Game = require('./game');
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const PORT = 3000;
 
 const games = [];
@@ -48,10 +52,11 @@ setInterval(() => {
   games.forEach(game => {
     if (game.status === 'running') {
       game.simulate();
+      io.emit(`game:${game.id}`, game);
     }
   });
 }, 1000 / 30);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);
 });

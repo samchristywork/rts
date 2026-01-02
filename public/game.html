@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RTS Game</title>
+  <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
   <canvas id="canvas" width="800" height="600" style="border: 1px solid black;"></canvas>
@@ -11,14 +12,11 @@
   <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
+    const params = new URLSearchParams(window.location.search);
+    const gameId = params.get('id');
+    const socket = io();
 
-    async function loadGame() {
-      const params = new URLSearchParams(window.location.search);
-      const gameId = params.get('id');
-
-      const response = await fetch(`/api/games/${encodeURIComponent(gameId)}`);
-      const game = await response.json();
-
+    function renderGame(game) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       game.entities.forEach(entity => {
@@ -41,13 +39,20 @@
       });
     }
 
+    async function loadGame() {
+      const response = await fetch(`/api/games/${encodeURIComponent(gameId)}`);
+      const game = await response.json();
+      renderGame(game);
+    }
+
+    socket.on(`game:${gameId}`, (game) => {
+      renderGame(game);
+    });
+
     canvas.addEventListener('click', async (e) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-
-      const params = new URLSearchParams(window.location.search);
-      const gameId = params.get('id');
 
       const action = {
         type: 'move',
