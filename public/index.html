@@ -6,5 +6,49 @@
   <title>RTS Game</title>
 </head>
 <body>
+  <h1>RTS Games</h1>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Game ID</th>
+        <th>Status</th>
+        <th>Map ID</th>
+        <th>Players</th>
+        <th>Entities</th>
+        <th>Start Time</th>
+      </tr>
+    </thead>
+    <tbody id="games-table-body">
+    </tbody>
+  </table>
+
+  <script>
+    async function loadGames() {
+      const response = await fetch('/api/games');
+      const games = await response.json();
+
+      const tbody = document.getElementById('games-table-body');
+      tbody.innerHTML = '';
+
+      games.forEach(game => {
+        const row = document.createElement('tr');
+        row.style.cursor = 'pointer';
+        row.innerHTML = `
+          <td>${game.id}</td>
+          <td>${game.status}</td>
+          <td>${game.mapId}</td>
+          <td>${game.playerIds.join(', ')}</td>
+          <td>${game.entities.length}</td>
+          <td>${new Date(game.startTime).toLocaleString()}</td>
+        `;
+        row.onclick = () => {
+          window.location.href = `/game.html?id=${encodeURIComponent(game.id)}`;
+        };
+        tbody.appendChild(row);
+      });
+    }
+
+    loadGames();
+  </script>
 </body>
 </html>
