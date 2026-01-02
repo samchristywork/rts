@@ -41,6 +41,30 @@
       });
     }
 
+    canvas.addEventListener('click', async (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const params = new URLSearchParams(window.location.search);
+      const gameId = params.get('id');
+
+      const action = {
+        type: 'move',
+        entityId: 4,
+        x: x,
+        y: y
+      };
+
+      await fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(action)
+      });
+    });
+
     loadGame();
   </script>
 </body>
