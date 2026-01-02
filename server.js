@@ -39,10 +39,18 @@ app.post('/api/games/:id/action', (req, res) => {
   }
 
   const action = req.body;
-  console.log(`move entity ${action.entityId} to position (${action.x}, ${action.y})`);
+  game.addAction(action);
 
   res.json({ success: true });
 });
+
+setInterval(() => {
+  games.forEach(game => {
+    if (game.status === 'running') {
+      game.simulate();
+    }
+  });
+}, 1000 / 30);
 
 app.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);

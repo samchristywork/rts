@@ -7,6 +7,7 @@ class Game {
     this.playerIds = playerIds;
     this.mapId = mapId;
     this.entities = [];
+    this.actions = [];
     this.status = 'waiting';
     this.nextEntityId = 1;
   }
@@ -51,6 +52,39 @@ class Game {
 
   end() {
     this.status = 'finished';
+  }
+
+  addAction(action) {
+    this.actions.push(action);
+  }
+
+  simulate() {
+    while (this.actions.length > 0) {
+      const action = this.actions.shift();
+      if (action.type === 'move') {
+        const entity = this.getEntity(action.entityId);
+        if (entity) {
+          entity.target = { x: action.x, y: action.y };
+        }
+      }
+    }
+
+    this.entities.forEach(entity => {
+      if (entity.target) {
+        const dx = entity.target.x - entity.position.x;
+        const dy = entity.target.y - entity.position.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < entity.speed) {
+          entity.position.x = entity.target.x;
+          entity.position.y = entity.target.y;
+          entity.target = null;
+        } else {
+          entity.position.x += (dx / distance) * entity.speed;
+          entity.position.y += (dy / distance) * entity.speed;
+        }
+      }
+    });
   }
 }
 

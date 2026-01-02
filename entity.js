@@ -4,6 +4,8 @@ class Entity {
     this.type = type;
     this.ownerId = ownerId;
     this.position = { x, y };
+    this.target = null;
+    this.speed = 2;
     this.health = 100;
     this.maxHealth = 100;
     this.createdAt = Date.now();
