@@ -48,6 +48,15 @@
           ctx.fillText(`${entity.value}`, entity.position.x - 10, entity.position.y + 20);
         } else if (entity.type === 'base') {
           ctx.fillText(`${entity.storedResources}/${entity.resourceCapacity}`, entity.position.x - 5, entity.position.y + 50);
+
+          if (entity.currentBuild) {
+            const percent = Math.floor((entity.buildProgress / entity.currentBuild.buildTime) * 100);
+            ctx.fillText(`Building: ${entity.currentBuild.unitType} ${percent}%`, entity.position.x - 5, entity.position.y + 60);
+          }
+
+          if (entity.buildQueue.length > 0) {
+            ctx.fillText(`Queue: ${entity.buildQueue.length}`, entity.position.x - 5, entity.position.y + 70);
+          }
         } else if (entity.type === 'worker') {
           ctx.fillText(`${entity.carrying}`, entity.position.x - 5, entity.position.y + 15);
         }
@@ -101,6 +110,22 @@
           }
         }
       });
+
+      if (base.storedResources >= 5 && base.buildQueue.length === 0 && !base.currentBuild) {
+        const action = {
+          type: 'build',
+          entityId: base.id,
+          unitType: 'worker'
+        };
+
+        fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(action)
+        });
+      }
     }
 
     socket.on(`game:${gameId}`, (game) => {
