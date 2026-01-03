@@ -58,10 +58,52 @@
       const response = await fetch(`/api/games/${encodeURIComponent(gameId)}`);
       const game = await response.json();
       renderGame(game);
+      runAI(game);
+    }
+
+    const workerAssignments = {};
+
+    function runAI(game) {
+      const workers = game.entities.filter(e => e.type === 'worker');
+      const resources = game.entities.filter(e => e.type === 'resource' && e.value > 0);
+      const base = game.entities.find(e => e.type === 'base');
+
+      if (!base) return;
+
+      workers.forEach(worker => {
+        if (!worker.harvestState) {
+          if (!workerAssignments[worker.id] || !resources.find(r => r.id === workerAssignments[worker.id])) {
+            const availableResource = resources.find(r => {
+              const assigned = Object.values(workerAssignments).filter(rid => rid === r.id).length;
+              return assigned === 0;
+            }) || resources[0];
+
+            if (availableResource) {
+              workerAssignments[worker.id] = availableResource.id;
+
+              const action = {
+                type: 'harvest',
+                entityId: worker.id,
+                resourceId: availableResource.id,
+                dropoffId: base.id
+              };
+
+              fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(action)
+              });
+            }
+          }
+        }
+      });
     }
 
     socket.on(`game:${gameId}`, (game) => {
       renderGame(game);
+      runAI(game);
     });
 
     canvas.addEventListener('click', async (e) => {

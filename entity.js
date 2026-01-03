@@ -8,11 +8,11 @@ class Entity {
     this.speed = 2;
     this.health = 100;
     this.maxHealth = 100;
-    this.value = type === 'resource' ? 500 : 0;
+    this.value = type === 'resource' ? 100 : 0;
     this.carrying = 0;
     this.carryingCapacity = type === 'worker' ? 1 : 0;
     this.storedResources = type === 'base' ? 0 : null;
-    this.resourceCapacity = type === 'base' ? 100 : null;
+    this.resourceCapacity = type === 'base' ? 50 : null;
     this.harvestState = null;
     this.createdAt = Date.now();
   }
