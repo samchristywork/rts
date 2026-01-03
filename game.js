@@ -48,6 +48,9 @@ class Game {
       for (let i = 0; i < 3; i++) {
         this.addEntity('worker', playerId, baseX + 50 + (i * 30), baseY + 50);
       }
+
+      this.addEntity('melee', playerId, baseX + 70, baseY + 100);
+      this.addEntity('ranged', playerId, baseX + 100, baseY + 100);
     });
   }
 

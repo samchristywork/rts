@@ -17,6 +17,8 @@ class Entity {
     this.currentBuild = type === 'base' ? null : null;
     this.buildProgress = type === 'base' ? 0 : null;
     this.harvestState = null;
+    this.attack = type === 'melee' ? 10 : (type === 'ranged' ? 5 : 0);
+    this.attackRange = type === 'melee' ? 15 : (type === 'ranged' ? 100 : 0);
     this.createdAt = Date.now();
   }
 }

@@ -38,6 +38,18 @@
           ctx.fill();
           ctx.strokeStyle = '#000';
           ctx.stroke();
+        } else if (entity.type === 'melee') {
+          ctx.fillStyle = '#DC143C';
+          ctx.beginPath();
+          ctx.arc(entity.position.x, entity.position.y, 10, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#000';
+          ctx.stroke();
+        } else if (entity.type === 'ranged') {
+          ctx.fillStyle = '#32CD32';
+          ctx.fillRect(entity.position.x - 8, entity.position.y - 8, 16, 16);
+          ctx.strokeStyle = '#000';
+          ctx.strokeRect(entity.position.x - 8, entity.position.y - 8, 16, 16);
         }
 
         ctx.fillStyle = '#000';
