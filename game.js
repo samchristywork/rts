@@ -120,15 +120,21 @@ class Game {
             } else if (entity.harvestState.phase === 'moving_to_dropoff') {
               const dropoff = this.getEntity(entity.harvestState.dropoffId);
               if (dropoff && entity.carrying > 0) {
-                const amount = Math.min(entity.carrying, dropoff.resourceCapacity - dropoff.storedResources);
-                dropoff.storedResources += amount;
-                entity.carrying -= amount;
-                const resource = this.getEntity(entity.harvestState.resourceId);
-                if (resource && resource.value > 0) {
-                  entity.harvestState.phase = 'moving_to_resource';
-                  entity.target = { x: resource.position.x, y: resource.position.y };
-                } else {
-                  entity.harvestState = null;
+                const spaceAvailable = dropoff.resourceCapacity - dropoff.storedResources;
+                if (spaceAvailable > 0) {
+                  const amount = Math.min(entity.carrying, spaceAvailable);
+                  dropoff.storedResources += amount;
+                  entity.carrying -= amount;
+
+                  if (entity.carrying === 0) {
+                    const resource = this.getEntity(entity.harvestState.resourceId);
+                    if (resource && resource.value > 0) {
+                      entity.harvestState.phase = 'moving_to_resource';
+                      entity.target = { x: resource.position.x, y: resource.position.y };
+                    } else {
+                      entity.harvestState = null;
+                    }
+                  }
                 }
               } else {
                 entity.harvestState = null;
