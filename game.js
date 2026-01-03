@@ -88,6 +88,11 @@ class Game {
           };
           worker.target = { x: resource.position.x, y: resource.position.y };
         }
+      } else if (action.type === 'build') {
+        const base = this.getEntity(action.entityId);
+        if (base && base.type === 'base') {
+          base.buildQueue.push({ unitType: action.unitType, cost: 5, buildTime: 90 });
+        }
       }
     }
 
@@ -144,6 +149,26 @@ class Game {
         } else {
           entity.position.x += (dx / distance) * entity.speed;
           entity.position.y += (dy / distance) * entity.speed;
+        }
+      }
+
+      if (entity.type === 'base') {
+        if (!entity.currentBuild && entity.buildQueue.length > 0) {
+          const nextBuild = entity.buildQueue[0];
+          if (entity.storedResources >= nextBuild.cost) {
+            entity.storedResources -= nextBuild.cost;
+            entity.currentBuild = entity.buildQueue.shift();
+            entity.buildProgress = 0;
+          }
+        }
+
+        if (entity.currentBuild) {
+          entity.buildProgress++;
+          if (entity.buildProgress >= entity.currentBuild.buildTime) {
+            this.addEntity(entity.currentBuild.unitType, entity.ownerId, entity.position.x + 50, entity.position.y + 50);
+            entity.currentBuild = null;
+            entity.buildProgress = 0;
+          }
         }
       }
     });

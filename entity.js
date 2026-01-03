@@ -13,6 +13,9 @@ class Entity {
     this.carryingCapacity = type === 'worker' ? 1 : 0;
     this.storedResources = type === 'base' ? 0 : null;
     this.resourceCapacity = type === 'base' ? 50 : null;
+    this.buildQueue = type === 'base' ? [] : null;
+    this.currentBuild = type === 'base' ? null : null;
+    this.buildProgress = type === 'base' ? 0 : null;
     this.harvestState = null;
     this.createdAt = Date.now();
   }
