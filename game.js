@@ -40,8 +40,8 @@ class Game {
 
   initializePlayerEntities() {
     this.playerIds.forEach((playerId, index) => {
-      const baseX = 100 + (index * 500);
-      const baseY = 100 + (index * 500);
+      const baseX = 100 + (index * 550);
+      const baseY = 100 + (index * 350);
 
       this.addEntity('base', playerId, baseX, baseY);
 

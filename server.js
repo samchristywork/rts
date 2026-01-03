@@ -11,7 +11,7 @@ const PORT = 3000;
 
 const games = [];
 
-const initialGame = new Game('map1', ['player1']);
+const initialGame = new Game('map1', ['player1', 'player2']);
 initialGame.start();
 games.push(initialGame);
 

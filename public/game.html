@@ -85,59 +85,62 @@
     const workerAssignments = {};
 
     function runAI(game) {
-      const workers = game.entities.filter(e => e.type === 'worker');
       const resources = game.entities.filter(e => e.type === 'resource' && e.value > 0);
-      const base = game.entities.find(e => e.type === 'base');
+      const bases = game.entities.filter(e => e.type === 'base');
 
-      if (!base || resources.length === 0) return;
+      if (resources.length === 0) return;
 
-      const resourcesByDistance = resources.map(r => {
-        const dx = r.position.x - base.position.x;
-        const dy = r.position.y - base.position.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        return { resource: r, distance };
-      }).sort((a, b) => a.distance - b.distance);
+      bases.forEach(base => {
+        const workers = game.entities.filter(e => e.type === 'worker' && e.ownerId === base.ownerId);
 
-      const closestResource = resourcesByDistance[0].resource;
+        const resourcesByDistance = resources.map(r => {
+          const dx = r.position.x - base.position.x;
+          const dy = r.position.y - base.position.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          return { resource: r, distance };
+        }).sort((a, b) => a.distance - b.distance);
 
-      workers.forEach(worker => {
-        if (!worker.harvestState) {
-          if (!workerAssignments[worker.id] || !resources.find(r => r.id === workerAssignments[worker.id])) {
-            workerAssignments[worker.id] = closestResource.id;
+        const closestResource = resourcesByDistance[0].resource;
 
-            const action = {
-              type: 'harvest',
-              entityId: worker.id,
-              resourceId: closestResource.id,
-              dropoffId: base.id
-            };
+        workers.forEach(worker => {
+          if (!worker.harvestState) {
+            if (!workerAssignments[worker.id] || !resources.find(r => r.id === workerAssignments[worker.id])) {
+              workerAssignments[worker.id] = closestResource.id;
 
-            fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(action)
-            });
+              const action = {
+                type: 'harvest',
+                entityId: worker.id,
+                resourceId: closestResource.id,
+                dropoffId: base.id
+              };
+
+              fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(action)
+              });
+            }
           }
+        });
+
+        if (base.storedResources >= 5 && base.buildQueue.length === 0 && !base.currentBuild) {
+          const action = {
+            type: 'build',
+            entityId: base.id,
+            unitType: 'worker'
+          };
+
+          fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(action)
+          });
         }
       });
-
-      if (base.storedResources >= 5 && base.buildQueue.length === 0 && !base.currentBuild) {
-        const action = {
-          type: 'build',
-          entityId: base.id,
-          unitType: 'worker'
-        };
-
-        fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(action)
-        });
-      }
     }
 
     socket.on(`game:${gameId}`, (game) => {
