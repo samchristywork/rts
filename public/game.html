@@ -71,6 +71,12 @@
           }
         } else if (entity.type === 'worker') {
           ctx.fillText(`${entity.carrying}`, entity.position.x - 5, entity.position.y + 15);
+        } else if (entity.type === 'melee' || entity.type === 'ranged') {
+          const healthPercent = entity.health / entity.maxHealth;
+          ctx.fillStyle = '#FF0000';
+          ctx.fillRect(entity.position.x - 15, entity.position.y - 20, 30, 4);
+          ctx.fillStyle = '#00FF00';
+          ctx.fillRect(entity.position.x - 15, entity.position.y - 20, 30 * healthPercent, 4);
         }
       });
     }
@@ -140,6 +146,43 @@
             body: JSON.stringify(action)
           });
         }
+
+        const combatUnits = game.entities.filter(e => (e.type === 'melee' || e.type === 'ranged') && e.ownerId === base.ownerId);
+        const enemies = game.entities.filter(e => e.ownerId && e.ownerId !== base.ownerId);
+
+        combatUnits.forEach(unit => {
+          if (!unit.attackTarget && enemies.length > 0) {
+            const closestEnemy = enemies.reduce((closest, enemy) => {
+              const dx = enemy.position.x - unit.position.x;
+              const dy = enemy.position.y - unit.position.y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+
+              if (!closest) return { enemy, distance };
+
+              const closestDx = closest.enemy.position.x - unit.position.x;
+              const closestDy = closest.enemy.position.y - unit.position.y;
+              const closestDistance = Math.sqrt(closestDx * closestDx + closestDy * closestDy);
+
+              return distance < closestDistance ? { enemy, distance } : closest;
+            }, null);
+
+            if (closestEnemy) {
+              const action = {
+                type: 'attack',
+                entityId: unit.id,
+                targetId: closestEnemy.enemy.id
+              };
+
+              fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(action)
+              });
+            }
+          }
+        });
       });
     }
 

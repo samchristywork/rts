@@ -96,6 +96,12 @@ class Game {
         if (base && base.type === 'base') {
           base.buildQueue.push({ unitType: action.unitType, cost: 5, buildTime: 90 });
         }
+      } else if (action.type === 'attack') {
+        const attacker = this.getEntity(action.entityId);
+        const target = this.getEntity(action.targetId);
+        if (attacker && target && attacker.attack > 0) {
+          attacker.attackTarget = action.targetId;
+        }
       }
     }
 
@@ -174,7 +180,33 @@ class Game {
           }
         }
       }
+
+      if (entity.attackCooldown > 0) {
+        entity.attackCooldown--;
+      }
+
+      if (entity.attackTarget !== null && entity.attack > 0) {
+        const target = this.getEntity(entity.attackTarget);
+        if (!target || target.health <= 0) {
+          entity.attackTarget = null;
+        } else {
+          const dx = target.position.x - entity.position.x;
+          const dy = target.position.y - entity.position.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance <= entity.attackRange) {
+            if (entity.attackCooldown === 0) {
+              target.health -= entity.attack;
+              entity.attackCooldown = entity.attackCooldownMax;
+            }
+          } else {
+            entity.target = { x: target.position.x, y: target.position.y };
+          }
+        }
+      }
     });
+
+    this.entities = this.entities.filter(e => e.health > 0);
   }
 }
 

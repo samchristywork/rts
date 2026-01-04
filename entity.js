@@ -19,6 +19,9 @@ class Entity {
     this.harvestState = null;
     this.attack = type === 'melee' ? 10 : (type === 'ranged' ? 5 : 0);
     this.attackRange = type === 'melee' ? 15 : (type === 'ranged' ? 100 : 0);
+    this.attackCooldown = 0;
+    this.attackCooldownMax = 30;
+    this.attackTarget = null;
     this.createdAt = Date.now();
   }
 }
