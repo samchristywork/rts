@@ -35,17 +35,13 @@ app.get('/api/games/:id', (req, res) => {
   }
 });
 
-app.post('/api/games/:id/action', (req, res) => {
-  const game = games.find(g => g.id === req.params.id);
-  if (!game) {
-    res.status(404).json({ error: 'Game not found' });
-    return;
-  }
-
-  const action = req.body;
-  game.addAction(action);
-
-  res.json({ success: true });
+io.on('connection', (socket) => {
+  socket.on('action', (data) => {
+    const game = games.find(g => g.id === data.gameId);
+    if (game) {
+      game.addAction(data.action);
+    }
+  });
 });
 
 setInterval(() => {

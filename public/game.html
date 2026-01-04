@@ -120,13 +120,7 @@
                 dropoffId: base.id
               };
 
-              fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(action)
-              });
+              socket.emit('action', { gameId, action });
             }
           }
         });
@@ -138,13 +132,7 @@
             unitType: 'worker'
           };
 
-          fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(action)
-          });
+          socket.emit('action', { gameId, action });
         }
 
         const combatUnits = game.entities.filter(e => (e.type === 'melee' || e.type === 'ranged') && e.ownerId === base.ownerId);
@@ -173,13 +161,7 @@
                 targetId: closestEnemy.enemy.id
               };
 
-              fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(action)
-              });
+              socket.emit('action', { gameId, action });
             }
           }
         });
@@ -191,7 +173,7 @@
       runAI(game);
     });
 
-    canvas.addEventListener('click', async (e) => {
+    canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -203,13 +185,7 @@
         y: y
       };
 
-      await fetch(`/api/games/${encodeURIComponent(gameId)}/action`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(action)
-      });
+      socket.emit('action', { gameId, action });
     });
 
     loadGame();
