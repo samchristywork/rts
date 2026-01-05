@@ -136,6 +136,61 @@ class Game {
     }
 
     this.entities.forEach(entity => {
+      if (entity.harvestState) {
+        if (entity.harvestState.phase === 'moving_to_resource') {
+          const resource = this.getEntity(entity.harvestState.resourceId);
+          if (resource) {
+            const dx = resource.position.x - entity.position.x;
+            const dy = resource.position.y - entity.position.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance <= entity.harvestRange && resource.value > 0 && entity.carrying < entity.carryingCapacity) {
+              const amount = Math.min(1, resource.value);
+              resource.value -= amount;
+              entity.carrying += amount;
+              entity.harvestState.phase = 'moving_to_dropoff';
+              const dropoff = this.getEntity(entity.harvestState.dropoffId);
+              if (dropoff) {
+                entity.target = { x: dropoff.position.x, y: dropoff.position.y };
+              }
+            }
+          } else {
+            entity.harvestState = null;
+            entity.target = null;
+          }
+        } else if (entity.harvestState.phase === 'moving_to_dropoff') {
+          const dropoff = this.getEntity(entity.harvestState.dropoffId);
+          if (dropoff) {
+            const dx = dropoff.position.x - entity.position.x;
+            const dy = dropoff.position.y - entity.position.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance <= entity.harvestRange && entity.carrying > 0) {
+              const spaceAvailable = dropoff.resourceCapacity - dropoff.storedResources;
+              if (spaceAvailable > 0) {
+                const amount = Math.min(entity.carrying, spaceAvailable);
+                dropoff.storedResources += amount;
+                entity.carrying -= amount;
+
+                if (entity.carrying === 0) {
+                  const resource = this.getEntity(entity.harvestState.resourceId);
+                  if (resource && resource.value > 0) {
+                    entity.harvestState.phase = 'moving_to_resource';
+                    entity.target = { x: resource.position.x, y: resource.position.y };
+                  } else {
+                    entity.harvestState = null;
+                    entity.target = null;
+                  }
+                }
+              }
+            }
+          } else {
+            entity.harvestState = null;
+            entity.target = null;
+          }
+        }
+      }
+
       if (entity.target) {
         const dx = entity.target.x - entity.position.x;
         const dy = entity.target.y - entity.position.y;
@@ -145,46 +200,6 @@ class Game {
           entity.position.x = entity.target.x;
           entity.position.y = entity.target.y;
           entity.target = null;
-
-          if (entity.harvestState) {
-            if (entity.harvestState.phase === 'moving_to_resource') {
-              const resource = this.getEntity(entity.harvestState.resourceId);
-              if (resource && resource.value > 0 && entity.carrying < entity.carryingCapacity) {
-                const amount = Math.min(1, resource.value);
-                resource.value -= amount;
-                entity.carrying += amount;
-                entity.harvestState.phase = 'moving_to_dropoff';
-                const dropoff = this.getEntity(entity.harvestState.dropoffId);
-                if (dropoff) {
-                  entity.target = { x: dropoff.position.x, y: dropoff.position.y };
-                }
-              } else {
-                entity.harvestState = null;
-              }
-            } else if (entity.harvestState.phase === 'moving_to_dropoff') {
-              const dropoff = this.getEntity(entity.harvestState.dropoffId);
-              if (dropoff && entity.carrying > 0) {
-                const spaceAvailable = dropoff.resourceCapacity - dropoff.storedResources;
-                if (spaceAvailable > 0) {
-                  const amount = Math.min(entity.carrying, spaceAvailable);
-                  dropoff.storedResources += amount;
-                  entity.carrying -= amount;
-
-                  if (entity.carrying === 0) {
-                    const resource = this.getEntity(entity.harvestState.resourceId);
-                    if (resource && resource.value > 0) {
-                      entity.harvestState.phase = 'moving_to_resource';
-                      entity.target = { x: resource.position.x, y: resource.position.y };
-                    } else {
-                      entity.harvestState = null;
-                    }
-                  }
-                }
-              } else {
-                entity.harvestState = null;
-              }
-            }
-          }
         } else {
           entity.position.x += (dx / distance) * entity.speed;
           entity.position.y += (dy / distance) * entity.speed;

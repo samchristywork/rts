@@ -11,6 +11,7 @@ class Entity {
     this.value = type === 'resource' ? 10 : 0;
     this.carrying = 0;
     this.carryingCapacity = type === 'worker' ? 1 : 0;
+    this.harvestRange = type === 'worker' ? 20 : 0;
     this.storedResources = type === 'base' ? 0 : null;
     this.resourceCapacity = type === 'base' ? 50 : null;
     this.buildQueue = type === 'base' ? [] : null;
