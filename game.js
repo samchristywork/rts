@@ -30,6 +30,36 @@ class Game {
     return this.entities.find(e => e.id === entityId);
   }
 
+  applySeparation() {
+    for (let i = 0; i < this.entities.length - 1; i++) {
+      for (let j = i + 1; j < this.entities.length; j++) {
+        const e1 = this.entities[i];
+        const e2 = this.entities[j];
+
+        const dx = e2.position.x - e1.position.x;
+        const dy = e2.position.y - e1.position.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const minDistance = e1.radius + e2.radius;
+
+        if (distance < minDistance && distance > 0) {
+          const overlap = minDistance - distance;
+          const nx = dx / distance;
+          const ny = dy / distance;
+
+          if (e1.movable) {
+            e1.position.x -= nx * overlap * 0.5;
+            e1.position.y -= ny * overlap * 0.5;
+          }
+
+          if (e2.movable) {
+            e2.position.x += nx * overlap * 0.5;
+            e2.position.y += ny * overlap * 0.5;
+          }
+        }
+      }
+    }
+  }
+
   start() {
     this.status = 'running';
     this.startTime = Date.now();
@@ -205,6 +235,8 @@ class Game {
         }
       }
     });
+
+    this.applySeparation();
 
     this.entities = this.entities.filter(e => e.health > 0);
   }

@@ -23,6 +23,14 @@ class Entity {
     this.attackCooldownMax = 30;
     this.attackTarget = null;
     this.createdAt = Date.now();
+    this.movable = ['worker', 'melee', 'ranged'].includes(type);
+    this.radius = {
+      'base': 25,
+      'worker': 6,
+      'melee': 8,
+      'ranged': 7,
+      'resource': 10
+    }[type];
   }
 }
 
