@@ -37,7 +37,7 @@
           <td>${game.id}</td>
           <td>${game.status}</td>
           <td>${game.mapId}</td>
-          <td>${game.playerIds.join(', ')}</td>
+          <td>${game.players.map(p => p.id).join(', ')}</td>
           <td>${game.entities.length}</td>
           <td>${new Date(game.startTime).toLocaleString()}</td>
         `;
