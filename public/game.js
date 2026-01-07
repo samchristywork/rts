@@ -88,12 +88,10 @@ async function loadGame() {
   const response = await fetch(`/api/games/${encodeURIComponent(gameId)}`);
   const game = await response.json();
   renderGame(game);
-  runAI(game);
 }
 
 socket.on(`game:${gameId}`, (game) => {
   renderGame(game);
-  runAI(game);
 });
 
 canvas.addEventListener('click', (e) => {
