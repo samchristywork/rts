@@ -3,6 +3,7 @@ const http = require('http');
 const path = require('path');
 const { Server } = require('socket.io');
 const Game = require('./game');
+const AIController = require('./ai');
 
 const app = express();
 const server = http.createServer(app);
@@ -12,6 +13,9 @@ const PORT = 3000;
 const games = [];
 
 const initialGame = new Game('map1', ['player1', 'player2']);
+initialGame.players[0].type = 'human';
+initialGame.players[1].type = 'cpu';
+initialGame.players[1].cpuType = 'Normal';
 initialGame.start();
 games.push(initialGame);
 
@@ -47,6 +51,11 @@ io.on('connection', (socket) => {
 setInterval(() => {
   games.forEach(game => {
     if (game.status === 'running') {
+      game.players.forEach(player => {
+        if (player.type === 'cpu') {
+          AIController.runAI(game, player);
+        }
+      });
       game.simulate();
       io.emit(`game:${game.id}`, game);
     }

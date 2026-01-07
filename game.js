@@ -4,7 +4,14 @@ class Game {
   constructor(mapId, playerIds) {
     this.id = this.generateGameId();
     this.startTime = Date.now();
-    this.playerIds = playerIds;
+    this.players = playerIds.map(id => ({
+      id: id,
+      type: 'human',
+      cpuType: null,
+      aiState: {
+        workerAssignments: {}
+      }
+    }));
     this.mapId = mapId;
     this.entities = [];
     this.actions = [];
@@ -35,6 +42,10 @@ class Game {
       for (let j = i + 1; j < this.entities.length; j++) {
         const e1 = this.entities[i];
         const e2 = this.entities[j];
+
+        if (e1.type === 'base' || e2.type === 'base') {
+          continue;
+        }
 
         const dx = e2.position.x - e1.position.x;
         const dy = e2.position.y - e1.position.y;
@@ -69,18 +80,18 @@ class Game {
   }
 
   initializePlayerEntities() {
-    this.playerIds.forEach((playerId, index) => {
+    this.players.forEach((player, index) => {
       const baseX = 100 + (index * 550);
       const baseY = 100 + (index * 350);
 
-      this.addEntity('base', playerId, baseX, baseY);
+      this.addEntity('base', player.id, baseX, baseY);
 
       for (let i = 0; i < 3; i++) {
-        this.addEntity('worker', playerId, baseX + 50 + (i * 30), baseY + 50);
+        this.addEntity('worker', player.id, baseX + 50 + (i * 30), baseY + 50);
       }
 
-      this.addEntity('melee', playerId, baseX + 70, baseY + 100);
-      this.addEntity('ranged', playerId, baseX + 100, baseY + 100);
+      this.addEntity('melee', player.id, baseX + 70, baseY + 100);
+      this.addEntity('ranged', player.id, baseX + 100, baseY + 100);
     });
   }
 
