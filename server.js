@@ -13,7 +13,8 @@ const PORT = 3000;
 const games = [];
 
 const initialGame = new Game('map1', ['player1', 'player2']);
-initialGame.players[0].type = 'human';
+initialGame.players[0].type = 'cpu';
+initialGame.players[0].cpuType = 'Aggressive';
 initialGame.players[1].type = 'cpu';
 initialGame.players[1].cpuType = 'Normal';
 initialGame.start();
