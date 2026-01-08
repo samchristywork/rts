@@ -81,8 +81,8 @@ class Game {
 
   initializePlayerEntities() {
     this.players.forEach((player, index) => {
-      const baseX = 100 + (index * 550);
-      const baseY = 100 + (index * 350);
+      const baseX = index === 0 ? 100 : 700;
+      const baseY = index === 0 ? 100 : 500;
 
       this.addEntity('base', player.id, baseX, baseY);
 
@@ -96,11 +96,12 @@ class Game {
   }
 
   initializeResources() {
-    this.addEntity('resource', null, 300, 200);
+    this.addEntity('resource', null, 200, 150);
+    this.addEntity('resource', null, 600, 450);
+    this.addEntity('resource', null, 150, 250);
+    this.addEntity('resource', null, 650, 350);
+    this.addEntity('resource', null, 300, 300);
     this.addEntity('resource', null, 500, 300);
-    this.addEntity('resource', null, 200, 400);
-    this.addEntity('resource', null, 600, 150);
-    this.addEntity('resource', null, 400, 450);
   }
 
   end() {
