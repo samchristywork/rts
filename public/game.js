@@ -23,9 +23,9 @@ function renderGame(game) {
   game.entities.forEach(entity => {
     if (entity.type === 'base') {
       ctx.fillStyle = '#8B4513';
-      ctx.fillRect(entity.position.x, entity.position.y, 40, 40);
+      ctx.fillRect(entity.position.x - 20, entity.position.y - 20, 40, 40);
       ctx.strokeStyle = '#000';
-      ctx.strokeRect(entity.position.x, entity.position.y, 40, 40);
+      ctx.strokeRect(entity.position.x - 20, entity.position.y - 20, 40, 40);
     } else if (entity.type === 'worker') {
       ctx.fillStyle = '#4169E1';
       ctx.beginPath();
@@ -60,15 +60,15 @@ function renderGame(game) {
     if (entity.type === 'resource') {
       ctx.fillText(`${entity.value}`, entity.position.x - 10, entity.position.y + 20);
     } else if (entity.type === 'base') {
-      ctx.fillText(`${entity.storedResources}/${entity.resourceCapacity}`, entity.position.x - 5, entity.position.y + 50);
+      ctx.fillText(`${entity.storedResources}/${entity.resourceCapacity}`, entity.position.x - 5, entity.position.y + 30);
 
       if (entity.currentBuild) {
         const percent = Math.floor((entity.buildProgress / entity.currentBuild.buildTime) * 100);
-        ctx.fillText(`Building: ${entity.currentBuild.unitType} ${percent}%`, entity.position.x - 5, entity.position.y + 60);
+        ctx.fillText(`Building: ${entity.currentBuild.unitType} ${percent}%`, entity.position.x - 5, entity.position.y + 40);
       }
 
       if (entity.buildQueue.length > 0) {
-        ctx.fillText(`Queue: ${entity.buildQueue.length}`, entity.position.x - 5, entity.position.y + 70);
+        ctx.fillText(`Queue: ${entity.buildQueue.length}`, entity.position.x - 5, entity.position.y + 50);
       }
     } else if (entity.type === 'worker') {
       ctx.fillText(`${entity.carrying}`, entity.position.x - 5, entity.position.y + 15);
