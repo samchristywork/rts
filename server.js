@@ -12,13 +12,26 @@ const PORT = 3000;
 
 const games = [];
 
-const initialGame = new Game('map1', ['player1', 'player2']);
-initialGame.players[0].type = 'cpu';
-initialGame.players[0].cpuType = 'Aggressive';
-initialGame.players[1].type = 'cpu';
-initialGame.players[1].cpuType = 'Normal';
-initialGame.start();
-games.push(initialGame);
+const aiTypes = ['Passive', 'Normal', 'Aggressive'];
+
+function getRandomAIType() {
+  return aiTypes[Math.floor(Math.random() * aiTypes.length)];
+}
+
+for (let i = 0; i < 5; i++) {
+  const ai1Type = getRandomAIType();
+  const ai2Type = getRandomAIType();
+
+  const game = new Game('map1', [`${ai1Type}-1`, `${ai2Type}-2`]);
+  game.players[0].type = 'cpu';
+  game.players[0].cpuType = ai1Type;
+  game.players[0].name = ai1Type;
+  game.players[1].type = 'cpu';
+  game.players[1].cpuType = ai2Type;
+  game.players[1].name = ai2Type;
+  game.start();
+  games.push(game);
+}
 
 app.use(express.json());
 app.use(express.static('public'));

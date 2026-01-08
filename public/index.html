@@ -38,10 +38,10 @@
           <td>${game.id}</td>
           <td>${game.status}</td>
           <td>${game.mapId}</td>
-          <td>${game.players.map(p => p.id).join(', ')}</td>
+          <td>${game.players.map(p => p.name || p.id).join(' vs ')}</td>
           <td>${game.entities.length}</td>
           <td>${new Date(game.startTime).toLocaleString()}</td>
-          <td>${game.winner || '-'}</td>
+          <td>${game.winner ? (game.players.find(p => p.id === game.winner)?.name || game.winner) : '-'}</td>
         `;
         row.onclick = () => {
           window.location.href = `/game.html?id=${encodeURIComponent(game.id)}`;

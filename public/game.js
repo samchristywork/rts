@@ -8,7 +8,9 @@ function renderGame(game) {
   const statusDiv = document.getElementById('game-status');
   if (game.status === 'finished') {
     if (game.winner) {
-      statusDiv.textContent = `Game Over - Winner: ${game.winner}`;
+      const winnerPlayer = game.players.find(p => p.id === game.winner);
+      const winnerName = winnerPlayer?.name || game.winner;
+      statusDiv.textContent = `Game Over - Winner: ${winnerName}`;
       statusDiv.style.color = '#00AA00';
     } else {
       statusDiv.textContent = 'Game Over - Draw';
