@@ -155,14 +155,19 @@ class Game {
             const dy = resource.position.y - entity.position.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance <= entity.harvestRange && resource.value > 0 && entity.carrying < entity.carryingCapacity) {
-              const amount = Math.min(1, resource.value);
-              resource.value -= amount;
-              entity.carrying += amount;
-              entity.harvestState.phase = 'moving_to_dropoff';
-              const dropoff = this.getEntity(entity.harvestState.dropoffId);
-              if (dropoff) {
-                entity.target = { x: dropoff.position.x, y: dropoff.position.y };
+            if (distance <= entity.harvestRange) {
+              if (resource.value > 0 && entity.carrying < entity.carryingCapacity) {
+                const amount = Math.min(1, resource.value);
+                resource.value -= amount;
+                entity.carrying += amount;
+                entity.harvestState.phase = 'moving_to_dropoff';
+                const dropoff = this.getEntity(entity.harvestState.dropoffId);
+                if (dropoff) {
+                  entity.target = { x: dropoff.position.x, y: dropoff.position.y };
+                }
+              } else {
+                entity.harvestState = null;
+                entity.target = null;
               }
             }
           } else {
