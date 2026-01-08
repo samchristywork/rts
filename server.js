@@ -53,6 +53,23 @@ app.get('/api/games/:id', (req, res) => {
   }
 });
 
+app.post('/api/games', (req, res) => {
+  const ai1Type = getRandomAIType();
+  const ai2Type = getRandomAIType();
+
+  const game = new Game('map1', [`${ai1Type}-1`, `${ai2Type}-2`]);
+  game.players[0].type = 'cpu';
+  game.players[0].cpuType = ai1Type;
+  game.players[0].name = ai1Type;
+  game.players[1].type = 'cpu';
+  game.players[1].cpuType = ai2Type;
+  game.players[1].name = ai2Type;
+  game.start();
+  games.push(game);
+
+  res.json(game);
+});
+
 io.on('connection', (socket) => {
   socket.on('action', (data) => {
     const game = games.find(g => g.id === data.gameId);
