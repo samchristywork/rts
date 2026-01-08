@@ -18,6 +18,7 @@ class Game {
     this.entities = [];
     this.actions = [];
     this.status = 'waiting';
+    this.winner = null;
     this.nextEntityId = 1;
   }
 
@@ -283,6 +284,28 @@ class Game {
     this.clampEntityPositions();
 
     this.entities = this.entities.filter(e => e.health > 0);
+
+    this.checkWinCondition();
+  }
+
+  checkWinCondition() {
+    if (this.status !== 'running') return;
+
+    const playersWithEntities = new Set();
+    this.entities.forEach(entity => {
+      if (entity.ownerId) {
+        playersWithEntities.add(entity.ownerId);
+      }
+    });
+
+    if (playersWithEntities.size === 1) {
+      this.winner = Array.from(playersWithEntities)[0];
+      this.status = 'finished';
+      console.log(`Game ${this.id} finished. Winner: ${this.winner}`);
+    } else if (playersWithEntities.size === 0) {
+      this.status = 'finished';
+      console.log(`Game ${this.id} finished. Draw - no players remaining.`);
+    }
   }
 }
 

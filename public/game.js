@@ -5,6 +5,20 @@ const gameId = params.get('id');
 const socket = io();
 
 function renderGame(game) {
+  const statusDiv = document.getElementById('game-status');
+  if (game.status === 'finished') {
+    if (game.winner) {
+      statusDiv.textContent = `Game Over - Winner: ${game.winner}`;
+      statusDiv.style.color = '#00AA00';
+    } else {
+      statusDiv.textContent = 'Game Over - Draw';
+      statusDiv.style.color = '#666666';
+    }
+  } else {
+    statusDiv.textContent = `Game Status: ${game.status}`;
+    statusDiv.style.color = '#000000';
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   game.entities.forEach(entity => {

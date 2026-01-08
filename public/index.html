@@ -16,6 +16,7 @@
         <th>Players</th>
         <th>Entities</th>
         <th>Start Time</th>
+        <th>Winner</th>
       </tr>
     </thead>
     <tbody id="games-table-body">
@@ -40,6 +41,7 @@
           <td>${game.players.map(p => p.id).join(', ')}</td>
           <td>${game.entities.length}</td>
           <td>${new Date(game.startTime).toLocaleString()}</td>
+          <td>${game.winner || '-'}</td>
         `;
         row.onclick = () => {
           window.location.href = `/game.html?id=${encodeURIComponent(game.id)}`;
