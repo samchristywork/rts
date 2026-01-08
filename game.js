@@ -13,6 +13,8 @@ class Game {
       }
     }));
     this.mapId = mapId;
+    this.mapWidth = 800;
+    this.mapHeight = 600;
     this.entities = [];
     this.actions = [];
     this.status = 'waiting';
@@ -69,6 +71,15 @@ class Game {
         }
       }
     }
+  }
+
+  clampEntityPositions() {
+    this.entities.forEach(entity => {
+      if (entity.movable) {
+        entity.position.x = Math.max(entity.radius, Math.min(this.mapWidth - entity.radius, entity.position.x));
+        entity.position.y = Math.max(entity.radius, Math.min(this.mapHeight - entity.radius, entity.position.y));
+      }
+    });
   }
 
   start() {
@@ -269,6 +280,7 @@ class Game {
     });
 
     this.applySeparation();
+    this.clampEntityPositions();
 
     this.entities = this.entities.filter(e => e.health > 0);
   }
