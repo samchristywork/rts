@@ -1,6 +1,8 @@
 class AIController {
   static runAI(game, player) {
-    if (player.cpuType === 'Normal') {
+    if (player.cpuType === 'Passive') {
+      this.runPassiveAI(game, player);
+    } else if (player.cpuType === 'Normal') {
       this.runNormalAI(game, player);
     } else if (player.cpuType === 'Aggressive') {
       this.runAggressiveAI(game, player);
@@ -72,7 +74,7 @@ class AIController {
     });
   }
 
-  static runNormalAI(game, player) {
+  static runPassiveAI(game, player) {
     const bases = game.entities.filter(e => e.type === 'base' && e.ownerId === player.id);
 
     bases.forEach(base => {
@@ -83,6 +85,40 @@ class AIController {
           type: 'build',
           entityId: base.id,
           unitType: 'worker'
+        };
+
+        game.addAction(action);
+      }
+    });
+
+    this.manageCombat(game, player);
+  }
+
+  static runNormalAI(game, player) {
+    const bases = game.entities.filter(e => e.type === 'base' && e.ownerId === player.id);
+
+    bases.forEach(base => {
+      this.assignWorkers(game, player, base);
+
+      if (base.storedResources >= 5 && base.buildQueue.length === 0 && !base.currentBuild) {
+        const workerCount = game.entities.filter(e => e.type === 'worker' && e.ownerId === player.id).length;
+        const combatCount = game.entities.filter(e => (e.type === 'melee' || e.type === 'ranged') && e.ownerId === player.id).length;
+
+        let unitType;
+        if (workerCount < 5) {
+          unitType = 'worker';
+        } else if (combatCount < workerCount) {
+          const meleeCount = game.entities.filter(e => e.type === 'melee' && e.ownerId === player.id).length;
+          const rangedCount = game.entities.filter(e => e.type === 'ranged' && e.ownerId === player.id).length;
+          unitType = meleeCount <= rangedCount ? 'melee' : 'ranged';
+        } else {
+          unitType = 'worker';
+        }
+
+        const action = {
+          type: 'build',
+          entityId: base.id,
+          unitType: unitType
         };
 
         game.addAction(action);
